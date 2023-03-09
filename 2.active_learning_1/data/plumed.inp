@@ -1,0 +1,16 @@
+# vim:ft=plumed
+UNITS LENGTH=A TIME=fs
+FLUSH STRIDE=1
+TORSION ATOMS=3,1,5,7 LABEL=t1
+METAD ARG=t1 ...
+    PACE=150
+    HEIGHT=1.2
+    BIASFACTOR=15
+    SIGMA=0.25
+    FILE=HILLS
+    GRID_MIN=-pi
+    GRID_MAX=pi
+    GRID_BIN=125
+    LABEL=m1
+...
+PRINT FILE=colvar ARG=*
