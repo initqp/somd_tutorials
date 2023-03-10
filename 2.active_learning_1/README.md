@@ -116,6 +116,7 @@ The above settings mean:
 - The number of NEP training steps is 150000, and the batch size is 1000.
 - Weights of the virial are zero, since we are describing an isolated ethane
   molecule.
+
 Note that you should change the value of the `nep_command` key to the working
 `nep` binary. You could also use a job manager like SLURM to submit the
 training job, in case your CPU and GPU nodes are separated. For example
