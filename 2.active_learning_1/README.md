@@ -122,10 +122,11 @@ Note that you should change the value of the `nep_command` key to the working
 training job, in case your CPU and GPU nodes are separated. For example
 (the `--wait` parameter is **REQUIRED**):
 ```toml
-nep_command = "/path/to/sbatch submit_nep.sh --wait"
+nep_command = "/path/to/sbatch --wait /absolute/path/to/submit_nep.sh"
 ```
 `submit_nep.sh`:
 ```bash
+#!/bin/bash
 #SBATCH -J training
 #SBATCH -o training.log
 #SBATCH -e training.err
