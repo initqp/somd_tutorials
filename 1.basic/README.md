@@ -12,7 +12,8 @@ basic sense about SOMD.
 ### The pseudopotential files
 Download pseudopotential files of oxygen and hydrogen from
 [here](https://departments.icmab.es/leem/SIESTA_MATERIAL/Databases/Pseudopotentials/periodictable-gga-abinit.html).
-Then copy the two `psf` files to the `data` directory.
+Then copy the two `psf` files to the `data` directory (or you could use the
+provided pseudopotential files).
 
 ## Go through the simulation script.
 
