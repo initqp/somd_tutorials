@@ -11,8 +11,7 @@ suggested to read [this article](https://doi.org/10.1016/j.cpc.2020.107206).
 ### The pseudopotential files
 Download pseudopotential files of carbon and hydrogen from
 [here](https://departments.icmab.es/leem/SIESTA_MATERIAL/Databases/Pseudopotentials/periodictable-gga-abinit.html).
-Then copy the two `psf` files to the `data` directory (or you could use the
-provided pseudopotential files).
+Then copy the two `psf` files to the `data` directory.
 
 ## Step 1. Generate initial training set
 
@@ -187,7 +186,8 @@ records some important information of the training iteration, e.g., the number
 of the accepted new structures (the `n_accepted_structures` key). If this
 number is less than 0.05% of the number of the MD steps, we may take the
 training process as converged (in my case, the number of the accepted new
-structures in the 4th training iteration is 7).
+structures in the 4th training iteration is 7). You could also find the four
+potential files trained by me under the `results` directory.
 
 ## Step 3. Perform static tests.
 
