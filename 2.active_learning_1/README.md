@@ -11,7 +11,8 @@ suggested to read [this article](https://doi.org/10.1016/j.cpc.2020.107206).
 ### The pseudopotential files
 Download pseudopotential files of carbon and hydrogen from
 [here](https://departments.icmab.es/leem/SIESTA_MATERIAL/Databases/Pseudopotentials/periodictable-gga-abinit.html).
-Then copy the two `psf` files to the `data` directory.
+Then copy the two `psf` files to the `data` directory (or you could use the
+provided pseudopotential files).
 
 ## Step 1. Generate initial training set
 
