@@ -24,7 +24,7 @@
 	SolutionMethod         diagon
 	ElectronicTemperature  1 meV
 	# If you do not have ELPA installed, comment out this line:
-        Diag.Algorithm         ELPA-1stage
+	Diag.Algorithm         ELPA-1stage
 	"""
 	siesta_command = "mpirun -np 4 /path/to/siesta"
 	pseudopotential_dir = "../data"
