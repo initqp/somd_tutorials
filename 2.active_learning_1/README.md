@@ -14,12 +14,12 @@ Download pseudopotential files of carbon and hydrogen from
 Then copy the two `psf` files to the `data` directory (or you could use the
 provided pseudopotential files).
 
-## Step 1. Generate initial training set
+## Step 1. Generate initial training set.
 
 Before starting the active learning process, an initial training set should be
 established. This training set will be invoked to train a set of initial NEPs
 during the first iteration of the active learning process. Thus, the
-configuration space covered by this the initial training set should not be too
+configuration space covered by this initial training set should not be too
 narrow. To this end, we will perform an initial simulation under a little
 higher temperature (700 K). And the total number of simulation steps will
 be 250. For complex systems, you may invoke more complicated protocols to
