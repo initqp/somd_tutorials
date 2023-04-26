@@ -12,8 +12,15 @@ sense about performing MD simulations with SOMD.
 ### [Building Neuroevolution Potentials with active learning, part I](./2.active_learning_1/README.md)
 In this tutorial we will try to fit non-reactive Neuroevolution Potentials
 (NEPs) of an isolated ethane molecule, by the mean of the active learning
-methodology. The metadyanmics method will also be invoked to accelerate
+methodology. The metadynamics method will also be invoked to accelerate
 the configuration space sampling.
+
+### [Building Neuroevolution Potentials with active learning, part II](./3.active_learning_2/README.md)
+In this tutorial we will try to fit reactive Neuroevolution Potentials
+(NEPs) for the symmetric $CH_3Cl + Cl^- -> Cl^- + CH_3Cl$ reaction within an
+explicit water box, by the mean of the active learning methodology. Steered MD
+and metadynamics methods will be invoked to accelerate the configuration space
+sampling.
 
 ## How to run
 First, make sure that each pre-required package has been installed. Then clone
