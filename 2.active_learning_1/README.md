@@ -79,14 +79,14 @@ Now you could enter the `init` directory and run the initial simulation:
 cd init
 somd -i init.toml
 ```
-After finishing this task, you will find the trajectory file (`init.xyz`)
-under the directory.
+After finishing this task, you will find the trajectory file
+(`init.trajectory.xyz`) under the directory.
 
 ## Step 2. Perform the training.
 
-After obtaining the initial training set (`init/init.xyz`), we could start
-the active learning process. Input file of this task could be simply modified
-from the previous input file (`init/init.toml`) by adding one
+After obtaining the initial training set (`init/init.trajectory.xyz`), we could
+start the active learning process. Input file of this task could be simply
+modified from the previous input file (`init/init.toml`) by adding one
 `[active_learning]` table to the file:
 ```toml
 [active_learning]
