@@ -1,0 +1,49 @@
+[system]
+	structure = "../data/topo.pdb"
+[[group]]
+	atom_list = "all"
+	initial_temperature = 350.0
+[[potential]]
+	type = "SIESTA"
+	siesta_options = """
+	xc.functional          GGA
+	xc.authors             revPBE
+
+	PAO.BasisSize          TZP
+	Mesh.Cutoff            300 Ry
+	PAO.EnergyShift        10 meV
+	PAO.SoftDefault        T
+
+	SCF.Mixer.Variant      Pulay
+	SCF.Mixer.History      8
+	DM.NumberPulay         8
+	DM.Tolerance           1.d-6
+	DM.UseSaveDM           T
+	DM.History.Depth       5
+
+	SolutionMethod         diagon
+	ElectronicTemperature  1 meV
+	# If you do not have ELPA installed, comment out this line:
+	Diag.Algorithm         ELPA-1stage
+	"""
+	siesta_command = "mpirun -np 140 /path/to/siesta"
+	pseudopotential_dir = "../data"
+[[potential]]
+	type = "DFTD3"
+	functional = "revpbe"
+[[potential]]
+	type = "PLUMED"
+	file_name = "../data/plumed.1.inp"
+[integrator]
+	type = "OBABO"
+	timestep = 0.001
+	temperatures = 350.0
+	relaxation_times = 0.1
+[[trajectory]]
+	format = "EXYZ"
+	write_forces = true
+	potential_list = [0, 1] # This is the *MOST* important key!
+	wrap_positions = true
+	interval = 1
+[run]
+	n_steps = 14000
