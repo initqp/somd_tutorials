@@ -112,8 +112,8 @@ The above settings mean:
   - The number of the MD sampling is 50000.
   - At least 20 and at most 100 new structures will be accepted.
 - The force MSD's lower limit of acceptable new structures is 50 kJ/mol/nm
-  (about 50 meV), and the force MSD's upper limit of acceptable new
-  structures is 250 kJ/mol/nm (about 250 meV).
+  (about 50 meV/Å), and the force MSD's upper limit of acceptable new
+  structures is 250 kJ/mol/nm (about 250 meV/Å).
 - The number of NEP training steps is 150000, and the batch size is 1000.
 - Weights of the virial are zero, since we are describing an isolated ethane
   molecule.
