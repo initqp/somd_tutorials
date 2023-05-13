@@ -4,23 +4,23 @@ This repo contains some tutorials of the [SOMD](https://github.com/initqp/somd)
 code. Going through these tutorials will make you familiar with SOMD quickly.
 
 ## Contents
-### [Basic tutorial](./1.basic/README.md)
+### [Basic tutorial](./1.basic)
 In this tutorial we will calculate the oxygen−oxygen radial distribution
 function of bulk waters. By finishing this tutorial, you may earn some basic
 sense about performing MD simulations with SOMD.
 
-### [Building Neuroevolution Potentials with active learning, part I](./2.active_learning_1/README.md)
+### [Building Neuroevolution Potentials with active learning, part I](./2.active_learning_1)
 In this tutorial we will try to fit non-reactive Neuroevolution Potentials
 (NEPs) of an isolated ethane molecule, by the mean of the active learning
 methodology. The metadynamics method will also be invoked to accelerate
 the configuration space sampling.
 
-### [Building Neuroevolution Potentials with active learning, part II](./3.active_learning_2/README.md)
+### [Building Neuroevolution Potentials with active learning, part II](./3.active_learning_2)
 In this tutorial we will try to fit reactive Neuroevolution Potentials
-(NEPs) for the symmetric $CH_3Cl + Cl^- -> Cl^- + CH_3Cl$ reaction within an
-explicit water box, by the mean of the active learning methodology. Steered MD
-and metadynamics methods will be invoked to accelerate the configuration space
-sampling.
+(NEPs) for the symmetric $CH_3Cl + Cl^- \rightarrow Cl^- + CH_3Cl$ reaction
+within an explicit water box, by the mean of the active learning methodology.
+Steered MD and metadynamics methods will be invoked to accelerate the
+configuration space sampling.
 
 ## How to run
 First, make sure that each pre-required package has been installed. Then clone

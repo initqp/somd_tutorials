@@ -1,0 +1,9 @@
+potential     ../final_training/nep.txt
+
+velocity      300
+ensemble      nvt_bao 300 300 100
+plumed        ../data/plumed.3.inp 1 0
+time_step     0.5
+dump_thermo   10000
+dump_position 10000
+run           30000000
