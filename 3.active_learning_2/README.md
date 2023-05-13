@@ -485,3 +485,7 @@ acceptable. The errors come from the following aspects:
 - We were using the pure functional, and hybrid functionals could largely
   improve the accuracy.
 - The pseudopotentials of SIESTA are not optimal.
+
+## Acknowledgment
+Thanks to [Dr. Fan](https://github.com/brucefan1983) for much meaningful
+guidance.
