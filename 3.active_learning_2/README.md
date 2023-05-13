@@ -391,10 +391,10 @@ Thus, it seems that our initial training set may be a little small, and
 increasing its size to about 300 may be a more optimal choice.
 
 ## Step 5. Perform the final training.
-We have already obtained a much more robust training set from the step 4
-(the `training_step_2/training_iter_4/train.xyz` file). Now we could use this
-final training set to train a better converged NEP. The `nep.in` file in the
-`final_training` directory was prepared for this task:
+We have already obtained a much more robust training set with 1000 structures
+(the `training_step_2/training_iter_4/train.xyz` file) from the step 4. Now we
+could use this final training set to train a better converged NEP. The `nep.in`
+file in the `final_training` directory was prepared for this task:
 ```
 type 5 C Cl H Na O
 
