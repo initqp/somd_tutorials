@@ -247,6 +247,7 @@ The above settings mean:
   these values are optimal for aqueous solution systems.
 - The number of NEP training steps is 50000, and the batch size is 1000.
 - Weights of the virial are zero.
+
 Note, since we have set the `energy_shift` key when generating the initial
 training set, we should set this key in the `[active_learning]` table to the
 same value we used there. Besides, for the current task, if your GPU device
