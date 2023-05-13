@@ -249,7 +249,11 @@ The above settings mean:
 - Weights of the virial are zero.
 Note, since we have set the `energy_shift` key when generating the initial
 training set, we should set this key in the `[active_learning]` table to the
-same value we used there.
+same value we used there. Besides, for the current task, if your GPU device
+memory is enough, you should always use one GPU only (because the simulation box
+length is smaller than twice of the cutoff radius, multi-GPU training will not
+bring a speed-up). Otherwise, you may want to reduce the batch size (e.g., 250)
+then use multiple GPUs (e.g., four GPU cards).
 
 Note that you should change the value of the `nep_command` key to the working
 `nep` binary. You could also use a job manager like SLURM to submit the
@@ -267,7 +271,7 @@ nep_command = "/path/to/sbatch --wait /absolute/path/to/submit_nep.sh"
 #SBATCH -N 1
 #SBATCH -p gpu
 #SBATCH --cpus-per-task=2
-CUDA_VISIBLE_DEVICES=0,1 /path/to/nep
+CUDA_VISIBLE_DEVICES=0 /path/to/nep
 ```
 Now you could enter the `training_step_1` directory and run the training:
 ```bash
@@ -412,7 +416,7 @@ could submit a regular NEP training task under this directory by invoking `nep`
 directly. For example:
 ```bash
 cd final_training
-CUDA_VISIBLE_DEVICES=0,1 /path/to/nep
+CUDA_VISIBLE_DEVICES=0 /path/to/nep
 ```
 After the training, the final NEP (the `nep.txt` file) will appear under the
 directory (or you may want to take a look at the NEP trained by me under the
@@ -470,7 +474,7 @@ You could now enter the `production` directory and submit a regular GPUMD
 task. For example:
 ```bash
 cd production
-CUDA_VISIBLE_DEVICES=0,1 /path/to/gpumd
+CUDA_VISIBLE_DEVICES=0 /path/to/gpumd
 ```
 (Note, you should compile your GPUMD binary with the `-DUSE_PLUMED` option on.)
 After the calculation, invoke the `barrier.sh` script to get the barrier height
