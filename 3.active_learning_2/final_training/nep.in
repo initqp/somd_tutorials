@@ -4,5 +4,5 @@ n_max      8 8
 cutoff     8 6
 neuron     40
 lambda_v   0.0
-batch      100
-generation 300000
+batch      1000
+generation 200000

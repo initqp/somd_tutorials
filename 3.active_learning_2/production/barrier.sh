@@ -1,5 +1,6 @@
 #!/bin/bash
 
+rm -f barrier.dat
 export PLUMED_MAXBACKUP=10000
 plumed sum_hills --hills HILLS --stride 250 --min -5 --max 5 --bin 500 --mintozero
 n_fes=$(find ./ -name "fes_*" | wc -l)
@@ -14,6 +15,6 @@ done
 rm -f analysis* fes_*.dat
 python << EOF
 import numpy as np
-data = np.loadtxt('barrier.dat')[50:, 1]
+data = np.loadtxt('barrier.dat')[75:, 1]
 print('BARRIER HEIGHT: {:f} +- {:f} (kJ/mol)'.format(np.mean(data), np.std(data)))
 EOF

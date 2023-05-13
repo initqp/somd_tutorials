@@ -57,7 +57,13 @@ sets and testing sets, you should dump the simulation trajectory in this
 format. You should also tell SOMD to record atomic forces in the trajectory
 file. But note that you should avoid also recording the biasing forces in this
 trajectory file. This could be done by defining the `potential_list` key in the
-`[[trajectory]]` table.
+`[[trajectory]]` table. Besides, we also defined the `energy_shift` key here.
+This key means that when saving potential energies to the trajectory, SOMD will
+subtract this value from the energies. Such a measure is applied because `nep`
+trains potentials under single precision, and potential energies with absolute
+values larger than 100.0 eV will damage the training accuracy. Thus, we set
+the value of this key to the approximate potential energy of our initial
+conformation (in unit of kJ/mol).
 
 Under the above settings, your input file should look like:
 ```toml
@@ -106,6 +112,7 @@ Under the above settings, your input file should look like:
         format = "EXYZ"
         write_forces = true
         potential_list = [0, 1] # This is the *MOST* important key!
+        energy_shift = -2199303.769
         wrap_positions = true
         interval = 1
 [run]
@@ -178,32 +185,24 @@ By observing the curve, we may classify the whole trajectory into four stages:
 - 5000 to 10000 fs: the post-TS region;
 - 10000 to 14000 fs: the post-TS region without any biasing potential.
 
-Bearing this information in mind, we could randomly select 500 frames from each
-time range then use 3/4 of the selected conformations as the initial training
-set, and leave the other 1/4 as the testing set. This could be done by invoking
-the `make_sets.sh` script:
+Bearing this information in mind, we could randomly select 50 frames from each
+and use them as the initial training set. This could be done by invoking the
+`make_sets.sh` script:
 
 `make_sets.sh`:
 ```bash
 #!/bin/sh
 
-rm -f tmp.xyz
+rm -f initial_training_set.xyz
 python ../data/split.py \
        -i init.trajectory.xyz \
-       --ranges "0:3000,3000:5000,5000:10000,10000:14000" \
-       --nframes 500 \
-       --perrange >> tmp.xyz
-python ../data/split.py \
-       -i tmp.xyz \
-       --ranges "0:1500" > initial_training_set.xyz
-python ../data/split.py \
-       -i tmp.xyz \
-       --ranges "1500:2000" > initial_testing_set.xyz
-rm -f tmp.xyz
+       --ranges "0:3500,3500:4500,4500:10000,10000:14000" \
+       --nframes 50 \
+       --perrange >> initial_training_set.xyz
 ```
-After invoking this script, you will find the `initial_training_set.xyz` and
-`initial_testing_set.xyz` files under the `init` directory. These will be
-used as the initial training and testing set of the active learning process.
+After invoking this script, you will find the `initial_training_set.xyz` files
+under the `init` directory. These will be used as the initial training set of
+the active learning process.
 
 ## Step 3. Perform the training step 1.
 
@@ -220,18 +219,18 @@ modified from the previous input file (`init/init.toml`) by adding one
         max_md_runs_per_iter = 5
         max_md_steps_per_iter = 8000
         min_new_structures_per_iter = 20
-        max_new_structures_per_iter = 250
+        max_new_structures_per_iter = 100
         initial_training_set = "../init/initial_training_set.xyz"
-        initial_testing_set = "../init/initial_testing_set.xyz"
         nep_options = """
-        n_max      8 8
+        n_max      4 4
         cutoff     8 6
-        neuron     40
+        neuron     10
         lambda_v   0.0
-        batch      50
-        generation 200000
+        batch      1000
+        generation 50000
         """
         nep_command = "/path/to/nep"
+        energy_shift = -2199303.769
 ```
 The above settings mean:
 - We will perform four iterations of training in total.
@@ -246,8 +245,11 @@ The above settings mean:
   boundary values are much higher the ones we used in the first tutorial. As
   suggested in [this article](https://doi.org/10.1016/j.cattod.2021.03.018),
   these values are optimal for aqueous solution systems.
-- The number of NEP training steps is 200000, and the batch size is 50.
+- The number of NEP training steps is 50000, and the batch size is 1000.
 - Weights of the virial are zero.
+Note, since we have set the `energy_shift` key when generating the initial
+training set, we should set this key in the `[active_learning]` table to the
+same value we used there.
 
 Note that you should change the value of the `nep_command` key to the working
 `nep` binary. You could also use a job manager like SLURM to submit the
@@ -285,11 +287,13 @@ And you can find the `training_info.json` files under each `training_iter_i`
 records some important information of the training iteration, e.g., the number
 of the accepted new structures (the `n_accepted_structures` key). However, at
 this point, the training seems to be far from converge because there are still
-too many (about 1/10 of the total visited structures) candidate structures:
+too many (about 5% of the total visited structures) candidate structures:
 ```json
-"n_failed_structures": 14,
-"n_candidate_structures": 4694,
-"n_accurate_structures": 35292,
+"n_visited_structures": 40000,
+"n_accurate_structures": 37988,
+"n_candidate_structures": 1973,
+"n_accepted_structures": 100,
+"n_failed_structures": 39,
 ```
 What's more, during this training step, the simulations are all driven by the
 strong moving restraints. As a result, the visited conformation space will be
@@ -342,19 +346,31 @@ the number of MD runs to 1 to sample a broader conformation space:
         max_md_runs_per_iter = 1
         max_md_steps_per_iter = 250000
         min_new_structures_per_iter = 20
-        max_new_structures_per_iter = 250
-        initial_training_set = "../init/initial_training_set.xyz"
-        initial_testing_set = "../init/initial_testing_set.xyz"
+        max_new_structures_per_iter = 100
+        initial_training_set = "../training_step_1/training_iter_4/train.xyz"
+        initial_potential_files = [
+                "../training_step_1/training_iter_4/potential_0/nep.txt",
+                "../training_step_1/training_iter_4/potential_1/nep.txt",
+                "../training_step_1/training_iter_4/potential_2/nep.txt",
+                "../training_step_1/training_iter_4/potential_3/nep.txt",
+        ]
         nep_options = """
-        n_max      8 8
+        n_max      4 4
         cutoff     8 6
-        neuron     40
+        neuron     10
         lambda_v   0.0
-        batch      50
-        generation 200000
+        batch      1000
+        generation 60000
         """
         nep_command = "/path/to/nep"
+        energy_shift = -2199303.769
 ```
+Note, since we are "restarting" the training based on the previous trained
+potentials in `training_step_1`, we should properly define the
+`initial_potential_files` key, which contains path of the initial NEPs.
+Besides, the `initial_training_set` should be modified as well, since the
+training set has been cumulated.
+
 After modifying the value of the `nep_command` key, you could enter the
 `training_step_2` directory and run the training:
 ```bash
@@ -368,6 +384,12 @@ number:
 
 ![number](assets/3.png "number of structures")
 
+From the above figure, we can find out that at the first training step, the
+NEPs failed to describe nearly most all structures. And when the training set
+size raised to about 300, number of the failed structures was largely declined.
+Thus, it seems that our initial training set may be a little small, and
+increasing its size to about 300 may be a more optimal choice.
+
 ## Step 5. Perform the final training.
 We have already obtained a much more robust training set from the step 4
 (the `training_step_2/training_iter_4/train.xyz` file). Now we could use this
@@ -380,14 +402,14 @@ n_max      8 8
 cutoff     8 6
 neuron     40
 lambda_v   0.0
-batch      100
-generation 300000
+batch      1000
+generation 200000
 ```
-Here we will use a larger batch size and run for more training steps to
-increase the training convergence. To perform the finial training, you should
-invoke the `copy_set.sh` script first to copy the training and testing sets.
-Then you could submit a regular NEP training task under this directory by
-invoke `nep` directly. For example:
+Here we will use a larger NN size and run for more training steps to increase
+the training convergence. To perform the finial training, you should invoke the
+`copy_set.sh` script first to copy the training and testing sets. Then you
+could submit a regular NEP training task under this directory by invoking `nep`
+directly. For example:
 ```bash
 cd final_training
 CUDA_VISIBLE_DEVICES=0,1 /path/to/nep
@@ -452,10 +474,10 @@ CUDA_VISIBLE_DEVICES=0,1 /path/to/gpumd
 ```
 (Note, you should compile your GPUMD binary with the `-DUSE_PLUMED` option on.)
 After the calculation, invoke the `barrier.sh` script to get the barrier height
-value. Using the NEP trained by me, I got a barrier of about 97.6 kJ/mol:
+value. Using the NEP trained by me, I got a barrier of about 100.2 kJ/mol:
 ```bash
 ./barrier.sh
-# BARRIER HEIGHT: 97.624729 +- 6.254113 (kJ/mol)
+# BARRIER HEIGHT: 100.195868 +- 7.540640 (kJ/mol)
 ```
 Since the experimental value is about 111 kJ/mol, we could say the result is
 acceptable. The errors come from the following aspects:

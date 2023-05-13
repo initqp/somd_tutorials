@@ -44,6 +44,7 @@
 	write_forces = true
 	potential_list = [0, 1] # This is the *MOST* important key!
 	wrap_positions = true
+	energy_shift = -2199303.769
 	interval = 1
 [run]
 	n_steps = 14000

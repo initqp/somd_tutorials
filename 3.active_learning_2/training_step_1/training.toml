@@ -45,15 +45,15 @@
 	max_md_runs_per_iter = 5
 	max_md_steps_per_iter = 8000
 	min_new_structures_per_iter = 20
-	max_new_structures_per_iter = 250
+	max_new_structures_per_iter = 100
 	initial_training_set = "../init/initial_training_set.xyz"
-	initial_testing_set = "../init/initial_testing_set.xyz"
 	nep_options = """
-	n_max      8 8
+	n_max      4 4
 	cutoff     8 6
-	neuron     40
+	neuron     10
 	lambda_v   0.0
-	batch      50
-	generation 200000
+	batch      1000
+	generation 50000
 	"""
 	nep_command = "/path/to/nep"
+	energy_shift = -2199303.769

@@ -45,9 +45,8 @@
 	max_md_runs_per_iter = 1
 	max_md_steps_per_iter = 250000
 	min_new_structures_per_iter = 20
-	max_new_structures_per_iter = 250
+	max_new_structures_per_iter = 100
 	initial_training_set = "../training_step_1/training_iter_4/train.xyz"
-	initial_testing_set = "../training_step_1/training_iter_4/test.xyz"
 	initial_potential_files = [
 		"../training_step_1/training_iter_4/potential_0/nep.txt",
 		"../training_step_1/training_iter_4/potential_1/nep.txt",
@@ -55,11 +54,12 @@
 		"../training_step_1/training_iter_4/potential_3/nep.txt",
 	]
 	nep_options = """
-	n_max      8 8
+	n_max      4 4
 	cutoff     8 6
-	neuron     40
+	neuron     10
 	lambda_v   0.0
-	batch      50
-	generation 200000
+	batch      1000
+	generation 60000
 	"""
 	nep_command = "/path/to/nep"
+	energy_shift = -2199303.769
