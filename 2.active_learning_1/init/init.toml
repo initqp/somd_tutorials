@@ -39,6 +39,7 @@
 [[trajectory]]
 	format = "EXYZ"
 	write_forces = true
+	energy_shift = -40704.6
 	interval = 1
 [run]
-	n_steps = 250
+	n_steps = 500

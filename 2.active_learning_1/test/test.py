@@ -43,11 +43,10 @@ with open('energy_siesta.txt', 'w') as fp:
 
 system.potentials.clear()
 
+potential_path = '../train/training.active_learning.dir/iteration_4/potential_{:d}/nep.txt'
 for i in range(0, 4):
-    p = somd.potentials.NEP(
-        range(0, system.n_atoms),
-        '../train/train_iter_8/potential_{:d}/nep.txt'.format(i),
-        system.atomic_symbols)
+    p = somd.potentials.NEP(range(0, system.n_atoms), potential_path.format(i),
+                            system.atomic_symbols)
     system.potentials.append(p)
 
 with open('energy_nep.txt', 'w') as fp:
