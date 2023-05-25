@@ -214,7 +214,6 @@ of candidate and accurate structures during the training:
 >>> plt.xlabel("number of training iteration")
 >>> plt.ylabel("percentage (%)")
 >>> plt.yscale("log")
->>> f = h5.File('./training.active_learning.h5')
 >>> g = h5.File('./training.active_learning.h5')['/iteration_data']
 >>> indices = [int(i) for i in g if (g[i].attrs['initialized'] and i != '0')]
 >>> n_c = [g[i]['n_candidate_structures'][0] for
