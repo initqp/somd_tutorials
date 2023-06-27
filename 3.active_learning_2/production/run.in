@@ -6,4 +6,4 @@ plumed        ../data/plumed.3.inp 1 0
 time_step     0.5
 dump_thermo   10000
 dump_position 10000
-run           30000000
+run           40000000

@@ -185,9 +185,9 @@ By observing the curve, we may classify the whole trajectory into four stages:
 - 5000 to 10000 fs: the post-TS region;
 - 10000 to 14000 fs: the post-TS region without any biasing potential.
 
-Bearing this information in mind, we could randomly select 50 frames from each
-and use them as the initial training set. This could be done by invoking the
-`make_sets.sh` script:
+Bearing this information in mind, we could randomly select 75 frames from each
+stage and use them as the initial training set. This could be done by invoking
+the `make_sets.sh` script:
 
 `make_sets.sh`:
 ```bash
@@ -197,12 +197,12 @@ rm -f initial_training_set.xyz
 python ../data/split.py \
        -i init.trajectory.xyz \
        --ranges "0:3500,3500:4500,4500:10000,10000:14000" \
-       --nframes 50 \
+       --nframes 75 \
        --perrange >> initial_training_set.xyz
 ```
-After invoking this script, you will find the `initial_training_set.xyz` files
-under the `init` directory. These will be used as the initial training set of
-the active learning process.
+After invoking this script, you will find the `initial_training_set.xyz` file
+under the `init` directory (containing 300 frames in total). This file will be
+used as the initial training set of the active learning process.
 
 ## Step 3. Perform the training step 1.
 
@@ -212,7 +212,7 @@ modified from the previous input file (`init/init.toml`) by adding one
 `[active_learning]` table to it:
 ```toml
 [active_learning]
-        n_iterations = 4
+        n_iterations = 3
         n_potentials = 4
         msd_lower_limit = 200.0
         msd_upper_limit = 400.0
@@ -233,12 +233,12 @@ modified from the previous input file (`init/init.toml`) by adding one
         energy_shift = -2199303.769
 ```
 The above settings mean:
-- We will perform four iterations of training in total.
+- We will perform three iterations of training in total.
 - In each training iteration:
   - Four different NEPs will be trained.
   - Five MD runs will be performed to collective conformations.
   - The length of the MD runs is 8000.
-  - At least 20 and at most 250 new structures will be accepted.
+  - At least 20 and at most 100 new structures will be accepted.
 - The force MSD's lower limit of acceptable new structures is 200 kJ/mol/nm
   (about 2 eV/Å), and the force MSD's upper limit of acceptable new
   structures is 400 kJ/mol/nm (about 4 eV/Å). You may have found that these
@@ -247,7 +247,6 @@ The above settings mean:
   these values are optimal for aqueous solution systems.
 - The number of NEP training steps is 50000, and the batch size is 1000.
 - Weights of the virial are zero.
-
 Note, since we have set the `energy_shift` key when generating the initial
 training set, we should set this key in the `[active_learning]` table to the
 same value we used there.
@@ -276,29 +275,37 @@ cd training_step_1
 somd -i training.toml
 ```
 After finishing this task, you will find the trained NEPs in the
-`training_iter_4` directory:
+`training.active_learning.dir/iteration_3` directory:
 ```bash
-training_iter_4/potential_0/nep.txt
-training_iter_4/potential_1/nep.txt
-training_iter_4/potential_2/nep.txt
-training_iter_4/potential_3/nep.txt
+training.active_learning.dir/iteration_3/potential_0/nep.txt
+training.active_learning.dir/iteration_3/potential_1/nep.txt
+training.active_learning.dir/iteration_3/potential_2/nep.txt
+training.active_learning.dir/iteration_3/potential_3/nep.txt
 ```
-And you can find the `training_info.json` files under each `training_iter_i`
-(where `i` is the number of the training iteration) directory. This file
-records some important information of the training iteration, e.g., the number
-of the accepted new structures (the `n_accepted_structures` key). However, at
-this point, the training seems to be far from converge because there are still
-too many (about 5% of the total visited structures) candidate structures:
-```json
-"n_visited_structures": 40000,
-"n_accurate_structures": 37988,
-"n_candidate_structures": 1973,
-"n_accepted_structures": 100,
-"n_failed_structures": 39,
+After finishing this task, you will find the two new items under you working
+directory: the `training.active_learning.h5` file and the
+`training.active_learning.dir` directory. This `hdf5` file records the training
+information, including the training progress, structure numbers, force MSD,
+etc. Details about this file could be found
+[here](https://github.com/initqp/somd/blob/master/doc/files.md). You could
+navigate this file, for example, to view the number of failed, candidate and
+accurate structures in the last iteration of the training:
+```python
+>>> import h5py as h5
+>>> g = h5.File('./training.active_learning.h5')['/iteration_data']
+>>> n_f = g['3']['n_failed_structures'][0]
+>>> n_c = g['3']['n_candidate_structures'][0]
+>>> n_a = g['3']['n_accurate_structures'][0]
+>>> print('number of failed structures: ', n_f)
+# number of failed structures:  0
+>>> print('number of candidate structures: ', n_c)
+# number of candidate structures:  392
+>>> print('number of accurate structures: ', n_a)
+# number of accurate structures:  39608
 ```
-What's more, during this training step, the simulations are all driven by the
-strong moving restraints. As a result, the visited conformation space will be
-liminal. Thus, we need to perform more active learning iterations to obtain
+However, during these training iterations, the simulations are all driven by
+the strong moving restraints. As a result, the visited conformation space will
+be liminal. Thus, we need to perform more active learning iterations to obtain
 robust NEPs.
 
 ## Step 4. Perform the training step 2.
@@ -340,20 +347,20 @@ steered MD. Then, we increase the MD simulation time to 250000 steps and reduce
 the number of MD runs to 1 to sample a broader conformation space:
 ```toml
 [active_learning]
-        n_iterations = 4
+        n_iterations = 6
         n_potentials = 4
         msd_lower_limit = 200.0
         msd_upper_limit = 400.0
-        max_md_runs_per_iter = 1
-        max_md_steps_per_iter = 250000
+        max_md_runs_per_iter = 4
+        max_md_steps_per_iter = 50000
         min_new_structures_per_iter = 20
-        max_new_structures_per_iter = 100
-        initial_training_set = "../training_step_1/training_iter_4/train.xyz"
+        max_new_structures_per_iter = 50
+        initial_training_set = "../training_step_1/training.active_learning.dir/iteration_3/train.xyz"
         initial_potential_files = [
-                "../training_step_1/training_iter_4/potential_0/nep.txt",
-                "../training_step_1/training_iter_4/potential_1/nep.txt",
-                "../training_step_1/training_iter_4/potential_2/nep.txt",
-                "../training_step_1/training_iter_4/potential_3/nep.txt",
+                "../training_step_1/training.active_learning.dir/iteration_3/potential_0/nep.txt",
+                "../training_step_1/training.active_learning.dir/iteration_3/potential_1/nep.txt",
+                "../training_step_1/training.active_learning.dir/iteration_3/potential_2/nep.txt",
+                "../training_step_1/training.active_learning.dir/iteration_3/potential_3/nep.txt",
         ]
         nep_options = """
         n_max      4 4
@@ -379,23 +386,24 @@ cd training_step_2
 somd -i training.toml
 ```
 After finishing this task, you will find the trained NEPs in the
-`training_iter_4` directory as usual. Here we plot the number of failed,
-candidate and accurate structures with respect to the total training iteration
-number:
+`training.active_learning.dir/iteration_6` directory as usual. Here we plot the
+number of failed, candidate and accurate structures with respect to the total
+training iteration number:
 
 ![number](assets/3.png "number of structures")
 
-From the above figure, we can find out that at the first training step, the
-NEPs failed to describe nearly most all structures. And when the training set
-size raised to about 300, number of the failed structures was largely declined.
-Thus, it seems that our initial training set may be a little small, and
-increasing its size to about 300 may be a more optimal choice.
+From the above figure, we could find out that the number of failed and
+candidate structures may not decrease monotonically during the active learning.
+As a result, using more training iterations with a relatively small
+`max_new_structures_per_iter` parameter could usually increase the
+convergence and stability of the training.
 
 ## Step 5. Perform the final training.
-We have already obtained a much more robust training set with 1000 structures
-(the `training_step_2/training_iter_4/train.xyz` file) from the step 4. Now we
-could use this final training set to train a better converged NEP. The `nep.in`
-file in the `final_training` directory was prepared for this task:
+We have already obtained a much more robust training set with 900 structures
+(the `training_step_2/training.active_learning.dir/iteration_6/train.xyz` file)
+from the step 4. Now we could use this final training set to train a better
+converged NEP. The `nep.in` file in the `final_training` directory was prepared
+for this task:
 ```
 type 5 C Cl H Na O
 
@@ -426,7 +434,7 @@ files):
 ## Perform the production run.
 Finally, we could use the trained NEP to perform production tasks. Here we will
 try to calculate the free energy barrier of the reaction using PLUMED and
-GPUMD. To this end, we will run a 15 ns long metadynamics simulation under
+GPUMD. To this end, we will run a 20 ns long metadynamics simulation under
 300 K, and this is the `run.in` file:
 ```
 potential     ../final_training/nep.txt
@@ -437,7 +445,7 @@ plumed        ../data/plumed.3.inp 1 0
 time_step     0.5
 dump_thermo   10000
 dump_position 10000
-run           30000000
+run           40000000
 ```
 To lower the errors introduced by the biasing potentials, we will decrease
 the deployment frequency of the Gaussian potentials. Thus, another PLUMED file
@@ -478,7 +486,7 @@ After the calculation, invoke the `barrier.sh` script to get the barrier height
 value. Using the NEP trained by me, I got a barrier of about 100.2 kJ/mol:
 ```bash
 ./barrier.sh
-# BARRIER HEIGHT: 100.195868 +- 7.540640 (kJ/mol)
+# BARRIER HEIGHT: 104.188367 +- 7.203901 (kJ/mol)
 ```
 Since the experimental value is about 111 kJ/mol, we could say the result is
 acceptable. The errors come from the following aspects:

@@ -18,6 +18,7 @@
 	SCF.Mixer.History      8
 	DM.NumberPulay         8
 	DM.Tolerance           1.d-6
+	MaxSCFIterations       128
 
 	SolutionMethod         diagon
 	ElectronicTemperature  1 meV
@@ -38,20 +39,20 @@
 	temperatures = 300.0
 	relaxation_times = 0.1
 [active_learning]
-	n_iterations = 4
+	n_iterations = 6
 	n_potentials = 4
 	msd_lower_limit = 200.0
 	msd_upper_limit = 400.0
-	max_md_runs_per_iter = 1
-	max_md_steps_per_iter = 250000
+	max_md_runs_per_iter = 4
+	max_md_steps_per_iter = 50000
 	min_new_structures_per_iter = 20
-	max_new_structures_per_iter = 100
-	initial_training_set = "../training_step_1/training_iter_4/train.xyz"
+	max_new_structures_per_iter = 50
+	initial_training_set = "../training_step_1/training.active_learning.dir/iteration_3/train.xyz"
 	initial_potential_files = [
-		"../training_step_1/training_iter_4/potential_0/nep.txt",
-		"../training_step_1/training_iter_4/potential_1/nep.txt",
-		"../training_step_1/training_iter_4/potential_2/nep.txt",
-		"../training_step_1/training_iter_4/potential_3/nep.txt",
+		"../training_step_1/training.active_learning.dir/iteration_3/potential_0/nep.txt",
+		"../training_step_1/training.active_learning.dir/iteration_3/potential_1/nep.txt",
+		"../training_step_1/training.active_learning.dir/iteration_3/potential_2/nep.txt",
+		"../training_step_1/training.active_learning.dir/iteration_3/potential_3/nep.txt",
 	]
 	nep_options = """
 	n_max      4 4

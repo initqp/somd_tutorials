@@ -18,6 +18,7 @@
 	SCF.Mixer.History      8
 	DM.NumberPulay         8
 	DM.Tolerance           1.d-6
+	MaxSCFIterations       128
 
 	SolutionMethod         diagon
 	ElectronicTemperature  1 meV
@@ -38,7 +39,7 @@
 	temperatures = 300.0
 	relaxation_times = 0.1
 [active_learning]
-	n_iterations = 4
+	n_iterations = 3
 	n_potentials = 4
 	msd_lower_limit = 200.0
 	msd_upper_limit = 400.0
