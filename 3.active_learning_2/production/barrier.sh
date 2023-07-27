@@ -15,6 +15,6 @@ done
 rm -f analysis* fes_*.dat
 python << EOF
 import numpy as np
-data = np.loadtxt('barrier.dat')[75:, 1]
+data = np.loadtxt('barrier.dat')[320:, 1]
 print('BARRIER HEIGHT: {:f} +- {:f} (kJ/mol)'.format(np.mean(data), np.std(data)))
 EOF

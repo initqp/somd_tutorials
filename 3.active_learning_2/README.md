@@ -486,7 +486,7 @@ After the calculation, invoke the `barrier.sh` script to get the barrier height
 value. Using the NEP trained by me, I got a barrier of about 100.2 kJ/mol:
 ```bash
 ./barrier.sh
-# BARRIER HEIGHT: 104.188367 +- 7.203901 (kJ/mol)
+# BARRIER HEIGHT: 102.982626 +- 5.084623 (kJ/mol)
 ```
 Since the experimental value is about 111 kJ/mol, we could say the result is
 acceptable. The errors come from the following aspects:
